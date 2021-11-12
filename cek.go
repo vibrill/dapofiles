@@ -1,7 +1,7 @@
 package dapofiles
 
 import (
-	"downfiles"
+	"downfiles" //"github.com/vibrill/downfiles"
 	"strconv"
 	"strings"
 )
