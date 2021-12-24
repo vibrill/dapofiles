@@ -13,70 +13,95 @@ func Cek() (siswa, guru, tendik string) {
 		sislist   []string
 		gurulist  []string
 		tendilist []string
+		gurumax   int
+		sismax    int
+		tendmax   int
 	)
 
 	//membuat file list dari file file yang dideteksi sebagai file dapodik
 	for _, f := range files {
 		//fmt.Println(f.Name())
-		if len(f.Name()) > 70 || f.Name()[len(f.Name())-5:] == ".xlsx" {
-			if f.Name()[:7] == "daftar_" || f.Name()[:7] == "daftar-" {
-				filelist = append(filelist, f.Name())
+		if len(f.Name()) > 70 {
+			if f.Name()[len(f.Name())-5:] == ".xlsx" {
+				if f.Name()[:7] == "daftar_" || f.Name()[:7] == "daftar-" {
+					filelist = append(filelist, f.Name())
+				}
 			}
 		}
 	}
 
-	//memggolongkan file berdasarkan siswa, guru atau tendik
-	for _, f := range filelist {
-		//fmt.Println(f)
+	if len(filelist) != 0 {
+		//memggolongkan file berdasarkan siswa, guru atau tendik
+		for _, f := range filelist {
+			//fmt.Println(f)
 
-		if f[:9] == "daftar_gu" || f[:9] == "daftar-gu" {
-			gurulist = append(gurulist, f)
+			if f[:9] == "daftar_gu" || f[:9] == "daftar-gu" {
+				gurulist = append(gurulist, f)
+			}
+			if f[:9] == "daftar_pd" || f[:9] == "daftar-pd" {
+				sislist = append(sislist, f)
+			}
+			if f[:9] == "daftar_te" || f[:9] == "daftar-te" {
+				tendilist = append(tendilist, f)
+			}
 		}
-		if f[:9] == "daftar_pd" || f[:9] == "daftar-pd" {
-			sislist = append(sislist, f)
-		}
-		if f[:9] == "daftar_te" || f[:9] == "daftar-te" {
-			tendilist = append(tendilist, f)
-		}
-	}
-	//fmt.Println(gurulist, sislist, tendilist)
+		//fmt.Println(gurulist, sislist, tendilist)
 
-	//pilih int tanggal terkini
-	var guruint []int
-	var sisint []int
-	var tendint []int
-	for _, f := range gurulist {
-		guruint = append(guruint, getdate(f))
-	}
-	for _, f := range sislist {
-		sisint = append(sisint, getdate(f))
-	}
-	for _, f := range tendilist {
-		tendint = append(tendint, getdate(f))
-	}
-	//fmt.Println(guruint, sisint, tendint)
+		//pilih int tanggal terkini
 
-	gurumax := findMax(guruint)
-	sismax := findMax(sisint)
-	tendmax := findMax(tendint)
+		if len(gurulist) != 0 {
+			var guruint []int
+			for _, f := range gurulist {
+				guruint = append(guruint, getdate(f))
+			}
+			gurumax = findMax(guruint)
+			for _, f := range gurulist {
+				if getdate(f) == gurumax {
+					guru = f
+				}
+			}
+		} else {
+			guru = "empty"
+		}
 
-	for _, f := range gurulist {
-		if getdate(f) == gurumax {
-			guru = f
+		if len(sislist) != 0 {
+			var sisint []int
+			for _, f := range sislist {
+				sisint = append(sisint, getdate(f))
+			}
+			sismax = findMax(sisint)
+			for _, f := range sislist {
+				if getdate(f) == sismax {
+					siswa = f
+				}
+			}
+		} else {
+			siswa = "empty"
 		}
-	}
-	for _, f := range sislist {
-		if getdate(f) == sismax {
-			siswa = f
+
+		if len(tendilist) != 0 {
+			var tendint []int
+			for _, f := range tendilist {
+				tendint = append(tendint, getdate(f))
+			}
+			tendmax = findMax(tendint)
+			for _, f := range tendilist {
+				if getdate(f) == tendmax {
+					tendik = f
+				}
+			}
+		} else {
+			tendik = "empty"
 		}
-	}
-	for _, f := range tendilist {
-		if getdate(f) == tendmax {
-			tendik = f
-		}
+	} else {
+		siswa = "empty"
+		guru = "empty"
+		tendik = "empty"
 	}
 	return siswa, guru, tendik
+
 }
+
 func getdate(f string) int {
 	k := strings.ReplaceAll(f, `_`, ``)
 	k = strings.ReplaceAll(k, `-`, ``)
@@ -85,6 +110,7 @@ func getdate(f string) int {
 	intK, _ := strconv.Atoi(k)
 	return intK
 }
+
 func findMax(a []int) int {
 	max := 0
 	if len(a) != 0 {
